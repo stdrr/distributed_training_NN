@@ -14,30 +14,28 @@ class DistributedInfrastructure(metaclass=abc.ABCMeta):
 
     def __init__(self):
         super(DistributedInfrastructure, self).__init__()
-        self._network_graph = nx.DiGraph()
-
-    @property
-    def network_graph(self):
-        """
-        """
-        return self._network_graph
+        
 
     @abc.abstractmethod
-    def _update_graph_abstraction(self):
+    def _create_agents(self, data_splits, batch_size, lambda_, alpha):
+       """
+       """
+       pass
+
+    @abc.abstractmethod
+    def _create_communication_links(self):
         """
         """
         pass
 
     @abc.abstractmethod
-    def connect_agent(self, agent, mount_point):
+    def _compute_weight_coefficients(self):
         """
-        Given an agent (node), connect it to the infrastructure graph at a given
-        mount point.
         """
         pass
 
     @abc.abstractmethod
-    def disconnect_agent(self, agent, mount_point):
+    def start(self, data_splits, epochs, batch_size, lambda_, alpha):
         """
         """
         pass

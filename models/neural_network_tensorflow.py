@@ -25,3 +25,19 @@ class RegressionNN(tf.keras.Model):
             x = layer(x)
 
         return x
+
+
+
+def get_model(n_units):
+    """
+    """
+    if isinstance(n_units, int):
+        n_units = [n_units]
+
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Input((11,)))
+
+    for n in n_units:
+        model.add(tf.keras.layers.Dense(n, activation='relu'))
+    model.add(tf.keras.layers.Dense(1))
+    return model

@@ -17,21 +17,14 @@ class Agent(metaclass=abc.ABCMeta):
         self._data = data
         self._endpoints = None
 
-    def set_endpoint(self, endpoint, endpoint_name):
+    def set_endpoint(self, monitor, endpoints_name):
         """
         """
-        if self._endpoints is None:
-            self._endpoints = {}
-        self._endpoints[endpoint_name] = endpoint
+        self._endpoints = sorted(endpoints_name)
+        self._monitor = monitor
 
     @abc.abstractmethod
     def train(**kwargs):
-        """
-        """
-        pass
-
-    @abc.abstractmethod
-    def predict(**kwargs):
         """
         """
         pass
