@@ -1,5 +1,4 @@
 import os
-from posixpath import split
 import tensorflow as tf
 import tensorflow_datasets as tfds
 
@@ -8,16 +7,6 @@ from infrastructure.locally_distributed_infrastructure import LocallyDistributed
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
-# n_agents = 6
-
-# # Data
-# splits = tfds.even_splits('train', n=n_agents)
-# data_splits = tfds.load('wine_quality', split=splits, as_supervised=True)
-
-# # Distributed training
-# local_inf = LocallyDistributedInfrastructure(n_agents=n_agents)
-# local_inf.start(data_splits=data_splits, epochs=10, batch_size=32, lambda_=1e-2, alpha=0.001)
 
 n_agents = 4
 

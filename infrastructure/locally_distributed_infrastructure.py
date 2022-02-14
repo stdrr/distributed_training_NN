@@ -1,13 +1,13 @@
 import multiprocessing as mp
 import networkx as nx
-import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 from agents.regression_tensorflow import RidgeRegressionTF
 
 from infrastructure.distributed_infrastructure import DistributedInfrastructure
 
-from models.neural_network_tensorflow import RegressionNN, get_model
+from models.neural_network_tensorflow import get_model
 
 
 
@@ -137,6 +137,7 @@ class LocallyDistributedInfrastructure(DistributedInfrastructure):
             p.join()
 
         self.plot_agents_metric()
+        self.plot_agents_consensus()
 
         
     def plot_agents_metric(self):
@@ -144,9 +145,9 @@ class LocallyDistributedInfrastructure(DistributedInfrastructure):
         """
         return_values = self._monitor.get_return_values()
         legend = []
-        fig = plt.figure(figsize=(16,10))
+        _ = plt.figure(figsize=(16,10))
         for agent_name in sorted(self._agents.keys()):
-            plt.plot(return_values[agent_name][5:], linewidth=2)
+            plt.plot(return_values[agent_name][0][5:], linewidth=2)
             legend.append(f'Agent {agent_name}')
 
         plt.yscale('log')
@@ -156,4 +157,24 @@ class LocallyDistributedInfrastructure(DistributedInfrastructure):
         plt.legend(legend)
         plt.title('MSE of the agents')
         plt.show() 
+
+
+    def plot_agents_consensus(self):
+        """
+        """
+        return_values = self._monitor.get_return_values()
+        consensus = np.zeros_like(return_values[0][1])
+        _ = plt.figure(figsize=(16,10))
+        for agent_name in sorted(self._agents.keys()):
+            consensus += np.asarray(return_values[agent_name][1])
+        
+        consensus = consensus / len(list(self._agents.keys()))
+        plt.plot(consensus, linewidth=2)
+
+        plt.yscale('log')
+        plt.xlabel('Epoch')
+        plt.ylabel('Disagreement')
+        plt.grid()
+        plt.title('Disagreement of the agents')
+        plt.show()
     

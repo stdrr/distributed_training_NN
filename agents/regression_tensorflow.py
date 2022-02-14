@@ -1,5 +1,6 @@
 from agents.agent import Agent
 import tensorflow as tf
+import numpy as np
 
 
 
@@ -16,6 +17,7 @@ class RidgeRegressionTF(Agent):
         self._alpha = alpha
         self._alpha_decay = alpha_decay
         self.test_history = []
+        self.consensus_history = []
         self.name = name
 
     
@@ -143,6 +145,18 @@ class RidgeRegressionTF(Agent):
         self._monitor.write_shared_resource(self.name, (y_numpy,z_numpy))
         # print(f'Process {self.name}: Sent parameters ({len(y)}, {len(z)})')
 
+    
+    def _compute_consensus(self, w, z):
+        """
+        """
+        inf_norms = []
+
+        for w_bar_j, w_j in zip(w, z):
+            
+            inf_norms.append(tf.norm(w_bar_j - w_j, ord=np.inf).numpy())
+        
+        self.consensus_history.append(np.max(np.array(inf_norms)))
+
         
     def train(self, epochs, c, I, test_data):
         """
@@ -166,6 +180,7 @@ class RidgeRegressionTF(Agent):
             y_neighbors, z_neighbors = self._get_neighbors_params(y, z)
             self._model.set_weights(self._compute_w(c, z_neighbors))
             w = self._model.trainable_weights
+            self._compute_consensus(w, z)
             grads_g_prev = grads_g
             grads_g = self._compute_gradients(w)
             y = self._compute_y(c, y_neighbors, grads_g, grads_g_prev)
@@ -176,7 +191,7 @@ class RidgeRegressionTF(Agent):
                 self.test_history.append(self.evaluate(test_data, self._batch_size))
 
         print(f'Node {self.name}: End of training after {i} epochs')
-        self._monitor.put_return_value(self.name, self.test_history)
+        self._monitor.put_return_value(self.name, (self.test_history, self.consensus_history))
         return self.test_history
         
 
